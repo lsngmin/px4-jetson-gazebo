@@ -1,4 +1,4 @@
-from common.singleton_mixin import SingletonMixin
+from common.singleton import SingletonMixin
 from constant.landed_state_enum import LandedStateEnum
 from monitor.interface.monitor_interface import MonitorInterface
 

@@ -9,3 +9,5 @@ pytest==8.3.5
 PyYAML==6.0.2
 tomli==2.2.1
 typing_extensions==4.13.2
+
+pydantic~=2.10.6

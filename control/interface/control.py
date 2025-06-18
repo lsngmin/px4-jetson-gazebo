@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 import logging
 
-from config import Config
-from mavlink.mavlinkClient import PymavlinkClient
+# from core.config import Config
+# from mavlink import PymavlinkClient
 
 
 class ControlInterface(ABC):

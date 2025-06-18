@@ -1,12 +1,11 @@
-from common.singleton_mixin import SingletonMixin
-from monitor.interface.monitor_interface import MonitorInterface
-from util.location import Location
+from common import Singleton
+from monitor import MonitorInterface
+from util import Location
 
-
-class WaypointMonitor(MonitorInterface, SingletonMixin):
+class WaypointMonitor(MonitorInterface, Singleton):
     def __init__(self):
         super().__init__()
-        SingletonMixin.__init__(self)
+
         self._on_condition_callback = None
         # 초기화 할 때 조난자 위치의 좌표를 입력 초기화 해야 목표 위치가 업데이트.
         self._target_location = Location(

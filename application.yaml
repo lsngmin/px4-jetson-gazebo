@@ -4,3 +4,4 @@ rescue_target:
   altitude: 180.0
   radius: 6.0
   hold_count: 5
+connection_uri: udp:0.0.0.0:14551

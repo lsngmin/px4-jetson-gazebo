@@ -1,5 +1,5 @@
-from common.singleton_mixin import SingletonMixin
-from constant.mode_enum import decode_px4_mode
+from common.singleton import SingletonMixin
+from constant import decode_px4_mode
 from monitor.interface.monitor_interface import MonitorInterface
 
 class ModeMonitor(MonitorInterface, SingletonMixin):
