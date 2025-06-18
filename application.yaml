@@ -1,0 +1,6 @@
+rescue_target:
+  latitude: 37.599904
+  longitude: 126.856694
+  altitude: 180.0
+  radius: 6.0
+  hold_count: 5
