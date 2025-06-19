@@ -1,6 +1,6 @@
 from typing import List
 
-from perception import DetectorInterface, DetectionResult
+from detect import DetectorInterface, DetectionResult
 
 
 class Detector(DetectorInterface):
