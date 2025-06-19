@@ -1,7 +1,5 @@
-rescue_target:
-  latitude: 37.599904
-  longitude: 126.856694
-  altitude: 180.0
-  radius: 6.0
-  hold_count: 5
 connection_uri: udp:0.0.0.0:14551
+
+rescue_target_lat: 47.398021
+rescue_target_lon: 8.546406
+rescue_target_tolerance: 20.0

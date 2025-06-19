@@ -1,3 +1,5 @@
+from typing_extensions import override
+
 from common import Singleton
 from constant import VtolStateEnum
 from monitor import MonitorInterface
@@ -5,10 +7,10 @@ from monitor import MonitorInterface
 class VtolStateMonitor(MonitorInterface, Singleton):
     def __init__(self):
         super().__init__()
-
         self._on_condition_callback = None
-        self.current_vtol_state = 0
+        self.current_vtol_state     = 0
 
+    @override
     def _handle_message(self, msg):
         vtol_state = msg.vtol_state
 
@@ -32,9 +34,11 @@ class VtolStateMonitor(MonitorInterface, Singleton):
 
         self.current_vtol_state = vtol_state
 
-    def set_trigger_callback(self, callback):
+    @override
+    def _register_callback(self, callback):
         self._on_condition_callback = callback
 
+    @override
     def _get_monitor_config(self):
         return (
             'EXTENDED_SYS_STATE',

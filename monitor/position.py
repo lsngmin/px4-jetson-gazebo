@@ -1,42 +1,41 @@
 from pydantic import BaseModel, Field
+from typing_extensions import override
 
 from common import Singleton
 from monitor import MonitorInterface
 
 class PositionData(BaseModel):
-    lat: float = Field(..., description="위도 (도)")
-    lon: float = Field(..., description="경도 (도)")
-    alt: float = Field(..., description="상대 고도 (m)")
-    rel_alt: float = Field(..., description="지면 기준 상대 고도 (m)")
-    heading: float = Field(..., description="기체 방향 (도)")
+    x: float = Field(..., description="현재 x (미터, 북쪽 기준)")
+    y: float = Field(..., description="현재 y (미터, 동쪽 기준)")
+    z: float = Field(..., description="현재 z (미터, 아래로 증가)")
 
     @classmethod
-    def from_msg(cls, msg):
+    def make(cls, msg):
         return cls(
-            lat=msg.lat / 1e7,
-            lon=msg.lon / 1e7,
-            alt=msg.alt / 1000,
-            rel_alt=msg.relative_alt / 1000,
-            heading=(msg.hdg / 100.0) if msg.hdg != 65535 else -1.0
+            x = msg.x,
+            y = msg.y,
+            z = msg.z
         )
 
 class PositionMonitor(MonitorInterface, Singleton):
     def __init__(self):
         super().__init__()
+        self._on_condition_callback = None
+        self.current_position = None
 
-        self._on_update_callback = None
-        self.current_position = None  # type: Optional[PositionData]
-
+    @override
     def _handle_message(self, msg):
-        self.current_position = PositionData.from_msg(msg)
-        if callable(self._on_update_callback):
-            self._on_update_callback(self.current_position)
+        self.current_position = PositionData.make(msg)
+        if callable(self._on_condition_callback):
+            self._on_condition_callback(self.current_position)
 
-    def set_trigger_callback(self, callback):
-        self._on_update_callback = callback
+    @override
+    def _register_callback(self, callback):
+        self._on_condition_callback = callback
 
+    @override
     def _get_monitor_config(self):
         return (
-            "GLOBAL_POSITION_INT",
+            "LOCAL_POSITION_NED",
             "위 경 고도 실시간 수신 시작"
         )

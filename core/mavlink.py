@@ -23,11 +23,10 @@ class MavLinkClient(Singleton):
     def _listen(self):
         while True:
             msg = self.master.recv_match(blocking=True, timeout=1)
-            #self.master.wait_heartbeat()
             if msg:
                 self._event_bus.publish(msg)
-                time.sleep(1)
-
+            else:
+                time.sleep(0.1)
 
     def subscribe(self, msg_type, callback):
         self._event_bus.subscribe(msg_type, callback)
@@ -43,18 +42,12 @@ class EventDispatcher:
         for cb in self._subscribers[msg.get_type()]:
             cb(msg)
 
-class RescueTarget(BaseModel):
-    latitude: float
-    longitude: float
-    altitude: float
-    radius: float
-    hold_count: int
-
-
 class Config(BaseModel):
     connection_uri: str
+    rescue_target_lat: float
+    rescue_target_lon: float
+    rescue_target_tolerance: float
     debug_mode: Optional[bool] = False
-    rescue_target: RescueTarget
 
     @classmethod
     def from_yaml(cls, path: str):

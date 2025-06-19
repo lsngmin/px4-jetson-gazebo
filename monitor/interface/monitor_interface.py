@@ -9,10 +9,12 @@ class MonitorInterface(ABC):
         self._config = self._client.config
         self._logger = logging.getLogger(self.__class__.__name__)
 
-    def start(self):
+    def start_with_callback(self, callback):
         msg_type, log_msg = self._get_monitor_config()
         self._client.subscribe(msg_type, self._handle_message)
         self._logger.info(log_msg)
+        self._register_callback(callback)
+        return self
 
     @abstractmethod
     def _get_monitor_config(self):
@@ -29,8 +31,5 @@ class MonitorInterface(ABC):
         pass
 
     @abstractmethod
-    def set_trigger_callback(self, callback):
-        """
-        조건 충족(또는 미충족) 시 호출될 콜백을 등록하는 함수.
-        """
+    def _register_callback(self, callback):
         pass

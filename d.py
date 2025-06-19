@@ -2,78 +2,6 @@ from pymavlink import mavutil
 import time
 import threading
 
-def monitor_statustext(master, duration=10):
-    t0 = time.time()
-    while time.time() - t0 < duration:
-        msg = master.recv_match(type='STATUSTEXT', blocking=True, timeout=2)
-        if msg:
-            print(f"[STATUSTEXT][{msg.severity}] {msg.text.strip()}")
-
-def sensor_bits_to_names(bits):
-    SENSOR_FLAGS = [
-        (0, 'GYRO'), (1, 'ACCEL'), (2, 'MAG'), (3, 'ABS_PRESSURE'), (4, 'DIFF_PRESSURE'),
-        (5, 'GPS'), (6, 'OPTICAL_FLOW'), (7, 'VISION_POSITION'), (8, 'LASER_POSITION'),
-        (9, 'EXTERNAL_GROUND_TRUTH'), (10, 'ANGULAR_RATE_CONTROL'), (11, 'ATTITUDE_STABILIZATION'),
-        (12, 'YAW_POSITION'), (13, 'Z_ALTITUDE_CONTROL'), (14, 'XY_POSITION_CONTROL'),
-        (15, 'MOTOR_OUTPUTS'), (16, 'RC_RECEIVER'), (17, '3D_GYRO2'), (18, '3D_ACCEL2'),
-        (19, '3D_MAG2'), (20, 'GEOFENCE'), (21, 'AHRS'), (22, 'TERRAIN'), (23, 'REVERSE_MOTOR'),
-        (24, 'LOGGING'), (25, 'BATTERY'), (26, 'PROXIMITY'), (27, 'SATCOM'), (28, 'PRECLAND'),
-        (29, 'OBSTACLE_AVOIDANCE'), (30, 'PROP_ENC'), (31, 'UNKNOWN31')
-    ]
-    return [name for i, name in SENSOR_FLAGS if bits & (1 << i)]
-
-def sys_status_check(master):
-    print("[INFO] Checking SYS_STATUS...")
-    msg = master.recv_match(type='SYS_STATUS', blocking=True, timeout=5)
-    if not msg:
-        print("[ERROR] No SYS_STATUS received!")
-        return False
-    healthy = msg.onboard_control_sensors_health
-    enabled = msg.onboard_control_sensors_enabled
-    enabled_names = sensor_bits_to_names(enabled)
-    healthy_names = sensor_bits_to_names(healthy)
-    unhealthy = set(enabled_names) - set(healthy_names)
-    print(f"[INFO] 센서 ENABLED  : {enabled_names}")
-    print(f"[INFO] 센서 HEALTHY : {healthy_names}")
-    if not unhealthy:
-        print("[OK] 모든 ENABLED 센서 정상!")
-        return True
-    if unhealthy == {"RC_RECEIVER"}:
-        print("[WARN] RC_RECEIVER만 unhealthy → 무시하고 진행")
-        return True
-    print(f"[FAIL] 이하 센서 ENABLED인데 HEALTHY 아님: {list(unhealthy)}")
-    return False
-
-def wait_for_px4_standby(master, timeout=60):
-    print("[INFO] Waiting for PX4 to reach STANDBY...")
-    t0 = time.time()
-    while time.time() - t0 < timeout:
-        hb = master.recv_match(type='HEARTBEAT', blocking=True, timeout=1)
-        if hb:
-            state = hb.system_status
-            print(f"  HEARTBEAT system_status={state}")
-            if state == mavutil.mavlink.MAV_STATE_STANDBY:
-                print("→ PX4 is now STANDBY!")
-                return True
-            monitor_statustext(master, duration=3)
-        else:
-            print("  No heartbeat")
-    print("✗ Timeout waiting for STANDBY")
-    return False
-
-def wait_for_gps_fix(master, timeout=60):
-    print("[INFO] Waiting for GPS fix...")
-    t0 = time.time()
-    while time.time() - t0 < timeout:
-        msg = master.recv_match(type='GPS_RAW_INT', blocking=True, timeout=2)
-        if msg and msg.fix_type >= 3:
-            print(f"[OK] GPS fix_type={msg.fix_type}, satellites={msg.satellites_visible}")
-            return True
-        else:
-            print("  Waiting for GPS fix...")
-    print("✗ Timeout waiting for GPS fix")
-    return False
-
 def send_setpoint(master, alt, repeat=50, sleep=0.02):
     for _ in range(repeat):
         now_ms = int(time.time() * 1000) % 0xFFFFFFFF
@@ -168,20 +96,6 @@ def target_z_func():
 if __name__ == "__main__":
     master = mavutil.mavlink_connection('udp:0.0.0.0:14551')
     master.wait_heartbeat(timeout=10)
-
-    if not wait_for_px4_standby(master, timeout=60):
-        print("[ABORT] PX4 not ready. See STATUSTEXT above.")
-        exit(1)
-
-    if not sys_status_check(master):
-        monitor_statustext(master, duration=10)
-        print("[ABORT] Sensor health problem.")
-        exit(1)
-
-    if not wait_for_gps_fix(master, timeout=60):
-        monitor_statustext(master, duration=10)
-        print("[ABORT] GPS fix not acquired.")
-        exit(1)
 
     # 4. OFFBOARD 전 setpoint 워밍업(1초)
     send_setpoint(master, alt=30.0, repeat=50, sleep=0.02)

@@ -1,6 +1,7 @@
 import logging, time, platform
 
 from common import configure_logging
+from manager import FlightManager, CheckPreflight
 
 from monitor.vtol_state import VtolStateMonitor
 from monitor.waypoint import WaypointMonitor
@@ -21,20 +22,23 @@ def main():
         """
                 )
     ########################################################################
+    FlightManager.get_instance()
 
-    vtol_monitor = VtolStateMonitor()
-    wp_monitor = WaypointMonitor()
+    # vtol_monitor = VtolStateMonitor()
+    # wp_monitor = WaypointMonitor()
     # md_monitor = ModeMonitor.get_instance()
     # ls_monitor = LandedStateMonitor.get_instance()
     # ps_monitor = PositionMonitor.get_instance()
     #monitors = [vtol_monitor, wp_monitor, md_monitor, ls_monitor]
 
-    monitors = [vtol_monitor, wp_monitor]
+    # monitors = [vtol_monitor, wp_monitor]
     # AuthorityControl.get_instance().push_monitor(monitors)
     #monitors.append(ps_monitor)
-    for monitor in monitors:
-        monitor.start()
-
+    # for monitor in monitors:
+    #     monitor.start()
+    #
+    # fc = FlightManager()
+    # fc.set_target(z=-30.0)
     while True:
         time.sleep(1)
 
