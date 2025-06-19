@@ -44,7 +44,7 @@ sudo docker exec -it pjg bash
 >Docker 컨테이너 내부에 진입한 후, 아래 명령어들을 각기 다른 터미널 또는 새로운 탭에서 실행해야 합니다.
 ```
 # PX4 + Gazebo 실행
-make px4_sitl gz_x500
+cd ../../PX4-autopilot \ make px4_sitl gz_standard_vtol
 
 # Micro XRCE-DDS 에이전트 실행
 MicroXRCEAgent udp4 -p 8888
