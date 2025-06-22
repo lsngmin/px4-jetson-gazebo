@@ -1,12 +1,7 @@
 import logging, time, platform
 
-from common import configure_logging
-from manager import FlightManager
-from manager.detect_manager import DetectManager
-
-from monitor.vtol_state import VtolStateMonitor
-from monitor.waypoint import WaypointMonitor
-
+from config import configure_logging
+from manager import DetectManager, FlightManager
 
 def main():
     ########################################################################

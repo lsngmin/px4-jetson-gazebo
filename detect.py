@@ -1,14 +1,10 @@
-import time
+import time, logging
 
-from detect import DetectionResult
-from typing import List
-
-from core import MavLinkClient
-from detect import DetectorInterface, DetectionResult
-import logging, cv2
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from pydantic import BaseModel, Field
+
+from core import MavLinkClient
 
 class DetectionResult(BaseModel):
     x: int = Field(..., description="이미지 상의 x 좌표")
@@ -55,9 +51,9 @@ class Detector(DetectorInterface):
 
         # resolveTODO: 카메라 연결 부분 구현
         self._camera_src = self._config.camera_src
-        self.cap = cv2.VideoCapture(self._camera_src, cv2.CAP_ANY)
-        if not self.cap.isOpened():
-            raise RuntimeError(f"카메라 연결 실패: {self._camera_src!r}")
+        # self.cap = cv2.VideoCapture(self._camera_src, cv2.CAP_ANY)
+        # if not self.cap.isOpened():
+        #     raise RuntimeError(f"카메라 연결 실패: {self._camera_src!r}")
         self._logger.info("Camera opened: %s", self._camera_src)
 
         # TODO: 모델 로드 구현
@@ -82,7 +78,7 @@ class Detector(DetectorInterface):
 
 class Model:
     def __init__(self, model_path: str = None):
-        self.model = yolov8.load(model_path)
+        # self.model = yolov8.load(model_path)
         self.model = None
         time.sleep(0.1)
 

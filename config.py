@@ -1,8 +1,23 @@
-import logging
-import os
+import yaml, os, logging
+
+from pydantic import BaseModel
+from typing import Optional
 from datetime import datetime
 from logging.handlers import RotatingFileHandler
 
+class Config(BaseModel):
+    connection_uri: str
+    rescue_target_lat: float
+    rescue_target_lon: float
+    rescue_target_tolerance: float
+    debug_mode: Optional[bool] = False
+    camera_src: str
+
+    @classmethod
+    def from_yaml(cls, path: str):
+        with open(path, 'r') as f:
+            data = yaml.safe_load(f)
+        return cls(**data)
 
 def configure_logging(level=logging.DEBUG, log_dir = "./log", filename = None):
     ######################################
@@ -52,7 +67,3 @@ def configure_logging(level=logging.DEBUG, log_dir = "./log", filename = None):
         root.addHandler(fh)
     except Exception as e:
         root.error(f"파일 핸들러 설정 실패: {filepath}, 오류: {e}")
-    ######################################
-    #                                    #
-    #                                    #
-    ######################################

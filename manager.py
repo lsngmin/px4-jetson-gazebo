@@ -1,15 +1,12 @@
-import threading, time, logging
-from time import sleep
+import time, logging, threading
 
 from pymavlink import mavutil
-from typing_extensions import deprecated
 
-from common import Singleton, Streamer
-from control import AuthorityControl
 from core import MavLinkClient
+from common import Singleton, MEventDispatcher, Streamer
 from monitor import PositionMonitor, PositionData
-
-from common import MEventDispatcher
+from control import AuthorityControl
+from detect import Detector
 
 class BaseManager:
     _event_dispatcher = None

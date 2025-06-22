@@ -1,14 +1,13 @@
-from abc import ABC, abstractmethod
 import logging
 
 from pydantic import BaseModel, Field
 from typing_extensions import override
+from abc import ABC, abstractmethod
 
-from common import Singleton
-from constant import VtolStateEnum, decode_px4_mode, LandedStateEnum
 from core import MavLinkClient
+from common import Singleton
+from constant import VtolStateEnum, decode_px4_mode
 from util import Location
-
 
 class MonitorInterface(ABC):
     def __init__(self):
@@ -82,6 +81,9 @@ class VtolStateMonitor(MonitorInterface, Singleton):
             f'모드 전환 감시 활성화 — 상태 변화를 대기 중입니다. (초기 vtol_state:{self.current_vtol_state})'
         )
 class WaypointMonitor(MonitorInterface, Singleton):
+    def _register_callback(self, callback):
+        pass
+
     def __init__(self):
         super().__init__()
 
@@ -115,10 +117,10 @@ class WaypointMonitor(MonitorInterface, Singleton):
             self._inside = False
 
         if was_inside != self._inside:
-            status = "목표 반경 진입" if self._inside else "목표 반경 이탈"
+            # status = "목표 반경 진입" if self._inside else "목표 반경 이탈"
             self._logger.info(
-                f"[WaypointMonitor] {status}: 반경 {self.radius_m}m, "
-                f"연속 {self.hold_count}회, 거리 {distance:.2f}m"
+                "[WaypointMonitor] {status}: 반경 {self.radius_m}m, "
+                "연속 {self.hold_count}회, 거리 {distance:.2f}m"
             )
             # 콜백 호출 (진입/이탈 모두 반영)
             if self._on_condition_callback:
@@ -237,36 +239,36 @@ class ModeMonitor(MonitorInterface, Singleton):
             'HEARTBEAT',
             "PX4 비행 모드 감시 활성화 — 상태 변화를 대기 중입니다."
         )
-class LandedStateMonitor(MonitorInterface, Singleton):
-    def __init__(self):
-        super().__init__()
-
-        self._current_state = LandedStateEnum.UNDEFINED
-        self._on_condition_callback = None  # type: callable[[LandedStateEnum], None]
-
-    # ----- 외부 API ---------------------------------------------------------
-
-    def set_trigger_callback(self, cb):
-        """상태가 바뀔 때 호출할 콜백 등록. 인자 = LandedStateEnum."""
-        self._on_condition_callback = cb
-
-    # ----- MonitorInterface 구현 -------------------------------------------
-
-    def _get_monitor_config(self):
-        return (
-            "EXTENDED_SYS_STATE",
-            f"이륙/착륙 상태 감시 시작… (초기값 {self._current_state.name})"
-        )
-
-    def _handle_message(self, msg):
-        new_state = LandedStateEnum(msg.landed_state)
-
-        if new_state != self._current_state:
-            self._logger.info(
-                f"[LANDED] {self._current_state.name} → {new_state.name} ({new_state.value})"
-            )
-            self._current_state = new_state
-
-            # 콜백이 등록돼 있으면 알림
-            if callable(self._on_condition_callback):
-                self._on_condition_callback(new_state)
+# class LandedStateMonitor(MonitorInterface, Singleton):
+#     def __init__(self):
+#         super().__init__()
+#
+#         self._current_state = LandedStateEnum.UNDEFINED
+#         self._on_condition_callback = None  # type: callable[[LandedStateEnum], None]
+#
+#     # ----- 외부 API ---------------------------------------------------------
+#
+#     def set_trigger_callback(self, cb):
+#         """상태가 바뀔 때 호출할 콜백 등록. 인자 = LandedStateEnum."""
+#         self._on_condition_callback = cb
+#
+#     # ----- MonitorInterface 구현 -------------------------------------------
+#
+#     def _get_monitor_config(self):
+#         return (
+#             "EXTENDED_SYS_STATE",
+#             f"이륙/착륙 상태 감시 시작… (초기값 {self._current_state.name})"
+#         )
+#
+#     def _handle_message(self, msg):
+#         new_state = LandedStateEnum(msg.landed_state)
+#
+#         if new_state != self._current_state:
+#             self._logger.info(
+#                 f"[LANDED] {self._current_state.name} → {new_state.name} ({new_state.value})"
+#             )
+#             self._current_state = new_state
+#
+#             # 콜백이 등록돼 있으면 알림
+#             if callable(self._on_condition_callback):
+#                 self._on_condition_callback(new_state)
