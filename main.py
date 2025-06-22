@@ -1,7 +1,8 @@
 import logging, time, platform
 
 from common import configure_logging
-from manager import FlightManager, CheckPreflight
+from manager import FlightManager
+from manager.detect_manager import DetectManager
 
 from monitor.vtol_state import VtolStateMonitor
 from monitor.waypoint import WaypointMonitor
@@ -9,7 +10,7 @@ from monitor.waypoint import WaypointMonitor
 
 def main():
     ########################################################################
-    configure_logging(level=logging.INFO, log_dir = "./log", filename = "AppLog")
+    configure_logging(level=logging.DEBUG, log_dir = "./log", filename = "AppLog")
     py_ver = platform.python_version()
     logger = logging.getLogger(__name__)
     logger.info(f"""
@@ -23,7 +24,7 @@ def main():
                 )
     ########################################################################
     FlightManager.get_instance()
-
+    DetectManager.get_instance()
     # vtol_monitor = VtolStateMonitor()
     # wp_monitor = WaypointMonitor()
     # md_monitor = ModeMonitor.get_instance()

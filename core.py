@@ -1,11 +1,11 @@
+
 import threading, time, logging, yaml, os
 
-from collections import defaultdict
 from pymavlink import mavutil
 from pydantic import BaseModel
 from typing import Optional
 
-from common import Singleton
+from common import Singleton, EventDispatcher
 
 class MavLinkClient(Singleton):
     def __init__(self):
@@ -31,23 +31,13 @@ class MavLinkClient(Singleton):
     def subscribe(self, msg_type, callback):
         self._event_bus.subscribe(msg_type, callback)
 
-class EventDispatcher:
-    def __init__(self):
-        self._subscribers = defaultdict(list)
-
-    def subscribe(self, msg_type, callback):
-        self._subscribers[msg_type].append(callback)
-
-    def publish(self, msg):
-        for cb in self._subscribers[msg.get_type()]:
-            cb(msg)
-
 class Config(BaseModel):
     connection_uri: str
     rescue_target_lat: float
     rescue_target_lon: float
     rescue_target_tolerance: float
     debug_mode: Optional[bool] = False
+    camera_src: str
 
     @classmethod
     def from_yaml(cls, path: str):

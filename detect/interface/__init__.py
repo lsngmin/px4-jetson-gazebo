@@ -1,1 +1,0 @@
-from .detector_interface import *

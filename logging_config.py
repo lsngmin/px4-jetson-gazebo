@@ -4,7 +4,7 @@ from datetime import datetime
 from logging.handlers import RotatingFileHandler
 
 
-def configure_logging(level=logging.INFO, log_dir = "./log", filename = None):
+def configure_logging(level=logging.DEBUG, log_dir = "./log", filename = None):
     ######################################
     #                                    #
     #                                    #

@@ -1,5 +1,6 @@
 connection_uri: udp:0.0.0.0:14551
 
-rescue_target_lat: 47.398021
-rescue_target_lon: 8.546406
+rescue_target_lat: 47.398158
+rescue_target_lon: 8.546696
 rescue_target_tolerance: 20.0
+camera_src: undefineddd
