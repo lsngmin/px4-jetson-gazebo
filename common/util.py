@@ -2,6 +2,9 @@ import math
 from datetime import datetime
 from dataclasses import dataclass
 import logging
+
+from pydantic import BaseModel, Field
+
 logger = logging.getLogger(__name__)
 
 @dataclass(frozen=True)
@@ -43,3 +46,16 @@ class GPSData:
     longitude: float
     altitude: float
     timestamp: datetime
+
+class PositionData(BaseModel):
+    x: float = Field(..., description="현재 x (미터, 북쪽 기준)")
+    y: float = Field(..., description="현재 y (미터, 동쪽 기준)")
+    z: float = Field(..., description="현재 z (미터, 아래로 증가)")
+
+    @classmethod
+    def make(cls, msg):
+        return cls(
+            x = msg.x,
+            y = msg.y,
+            z = msg.z
+        )

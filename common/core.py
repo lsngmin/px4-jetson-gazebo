@@ -1,11 +1,8 @@
-import threading, time, logging, yaml, os
+import threading, time, logging
 
 from pymavlink import mavutil
-from pydantic import BaseModel
-from typing import Optional
 
-from config import Config
-from common import Singleton, EventDispatcher
+from common import Config, Singleton, EventDispatcher
 
 class MavLinkClient(Singleton):
     def __init__(self):
@@ -14,7 +11,7 @@ class MavLinkClient(Singleton):
         self.__class__._initialized = True
 
         self._logger = logging.getLogger(self.__class__.__name__)
-        self.config = Config.from_yaml("application.yaml")
+        self.config = Config.from_yaml("./application.yaml")
         self.master = mavutil.mavlink_connection(self.config.connection_uri)
         self._event_bus = EventDispatcher()
 

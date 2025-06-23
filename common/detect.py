@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from typing import List, Optional
 from pydantic import BaseModel, Field
 
-from core import MavLinkClient
+from common.core import MavLinkClient
 
 class DetectionResult(BaseModel):
     x: int = Field(..., description="이미지 상의 x 좌표")

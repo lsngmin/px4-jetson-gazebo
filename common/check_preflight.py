@@ -3,7 +3,7 @@ import logging, time
 from pymavlink import mavutil
 
 from common import Singleton
-from core import MavLinkClient
+from common.core import MavLinkClient
 
 class CheckPreflight(Singleton):
     def __init__(self):

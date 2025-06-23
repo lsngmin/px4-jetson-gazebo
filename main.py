@@ -1,7 +1,7 @@
 import logging, time, platform
 
-from config import configure_logging
-from manager import DetectManager, FlightManager
+from common.config import configure_logging
+from layer.manager import DetectManager, FlightManager
 
 def main():
     ########################################################################
