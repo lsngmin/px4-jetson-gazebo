@@ -5,6 +5,8 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 from common.core import MavLinkClient
+from YoloPredictor import YOLOPredictor
+import cv2
 
 class DetectionResult(BaseModel):
     x: int = Field(..., description="이미지 상의 x 좌표")
@@ -16,6 +18,7 @@ class DetectionResult(BaseModel):
     height: Optional[int] = Field(None, description="바운딩 박스 높이")
     world_x: Optional[float] = Field(None, description="실세계 x 좌표 (예: GPS 또는 meter)")
     world_y: Optional[float] = Field(None, description="실세계 y 좌표")
+
 
 class DetectorInterface(ABC):
     """
@@ -43,7 +46,8 @@ class DetectorInterface(ABC):
 
         pass
 
-class Detector(DetectorInterface):
+
+class Detector:
     def __init__(self):
         self._client = MavLinkClient.get_instance()
         self._config = self._client.config
@@ -56,18 +60,36 @@ class Detector(DetectorInterface):
         #     raise RuntimeError(f"카메라 연결 실패: {self._camera_src!r}")
         self._logger.info("Camera opened: %s", self._camera_src)
 
-        # TODO: 모델 로드 구현
+        # TODO: 모델 로드 구현 (o)
 
-        pass
+        self.model = YoloPredictor(model_path="best.torchscript", imgsz=832, conf=0.5, show=False)
+
 
     def detect(self, frame) -> List[DetectionResult]:
-        # TODO: 실제 모델을 프레임 속에 올려 객체 인식하는 핵심 부분입니다.
-        return [
-            # TODO: 각 리스트 요소에 인식할 객체의 파라미터를 결정해 넣어주시면 됩니다.
-            DetectionResult(x=100, y=200, confidence=0.92, label='rescue_target'),
-            DetectionResult(x=250, y=300, confidence=0.87, label='vertiport1'),
-            DetectionResult(x=250, y=300, confidence=0.87, label='vertiport2')
-        ]
+        # TODO: 실제 모델을 프레임 속에 올려 객체 인식하는 핵심 부분입니다. (O)
+
+        results = self.model.infer(source=frame)
+        detections = []
+
+        for det in results:
+            x1, y1, x2, y2 = det["bbox"]
+            x_center = int((x1 + x2) / 2)
+            y_center = int((y1 + y2) / 2)
+            width = int(x2 - x1)
+            height = int(y2 - y1)
+                
+            detections.append(
+                DetectionResult(
+                    x=x_center,
+                    y=y_center,
+                    confidence=det["conf"],
+                    label=det["label"]
+                )
+            )
+
+        # TODO: 각 리스트 요소에 인식할 객체의 파라미터를 결정해 넣어주시면 됩니다. (O)
+        return detections
+
 
     def infer(self) -> DetectionResult:
         ret, frame = self.cap.read()
@@ -76,8 +98,9 @@ class Detector(DetectorInterface):
             return None
         return self.detect(frame)
 
+
 class Model:
-    def __init__(self, model_path: str = None):
+    def __init__(self, model_path: str = "/home/azure/oje36/best.trt"):
         # self.model = yolov8.load(model_path)
         self.model = None
         time.sleep(0.1)
