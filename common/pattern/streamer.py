@@ -3,7 +3,7 @@ import threading, logging, time
 class Streamer(threading.Thread):
     def __init__(self, command, sleep=0.02):
         super().__init__(daemon=True)
-        self.manager = None
+        self.handler = None
         self.command = command
         self.sleep = sleep
         self._stop_event = threading.Event()
@@ -12,8 +12,8 @@ class Streamer(threading.Thread):
         self._y = None
         self._z = None
 
-    def with_manager(self , manager, sleep=0.02):
-        self.manager = manager
+    def with_handler(self , handler, sleep=0.02):
+        self.handler = handler
         self.sleep = sleep
         return self
 
@@ -22,7 +22,6 @@ class Streamer(threading.Thread):
         self._y = y
         self._z = z
         self.sleep = sleep
-        print("cc")
         return self
 
     def run(self):
@@ -30,11 +29,9 @@ class Streamer(threading.Thread):
 
         while not self._stop_event.is_set():
             try:
-                x = self.manager.current['x'] if self._x is None else self._x
-                y = self.manager.current['y'] if self._y is None else self._y
-                z = self.manager.current['z'] if self._z is None else self._z
-                print(x, y, z)
-
+                x = self.handler.current['x'] if self._x is None else self._x
+                y = self.handler.current['y'] if self._y is None else self._y
+                z = self.handler.current['z'] if self._z is None else self._z
                 self.command.send_setpoint(x, y, z)
                 time.sleep(self.sleep)
             except Exception as e:

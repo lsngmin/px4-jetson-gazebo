@@ -1,28 +1,29 @@
 import logging, time, threading
 from pymavlink import mavutil
-
+from common.pattern import Singleton
 from common.core import MavLinkClient
 from common.pattern import Streamer
-from default import SET_MODE_OFFBOARD
+from default import SET_MODE_OFFBOARD, HOLD_ALTITUDE
 from common.pattern import M2EventDispatcher
 from layer.handler import Handler
 
-
-class Command:
+class Command(Singleton):
     MAV_CMD_COMPONENT_ARM_DISARM = mavutil.mavlink.MAV_CMD_COMPONENT_ARM_DISARM
     MAV_CMD_DO_SET_MODE = mavutil.mavlink.MAV_CMD_DO_SET_MODE
     MAV_MODE_FLAG_CUSTOM_MODE_ENABLED = mavutil.mavlink.MAV_MODE_FLAG_CUSTOM_MODE_ENABLED
     MAV_FRAME_LOCAL_NED = mavutil.mavlink.MAV_FRAME_LOCAL_NED
+
     def __init__(self):
+        super().__init__()
         self._client = MavLinkClient.get_instance()
         self._config = self._client.config
         self._logger = logging.getLogger(self.__class__.__name__)
         self._toc: M2EventDispatcher = M2EventDispatcher.instance()
         self._streamer = None
         self._lock = threading.Lock()
-        self.manager = None
-
         self._toc.subscribe(SET_MODE_OFFBOARD, self.set_mode_offboard)
+        self._toc.subscribe(HOLD_ALTITUDE, self.hold_position_takeoff)
+
 
         while True:
             hb = self._client.master.recv_match(type='HEARTBEAT', blocking=True, timeout=5)
@@ -53,12 +54,10 @@ class Command:
 
     #---------------------- 3. 오프보드 전환 ----------------------
     def set_mode_offboard(self, handler: Handler) -> None:
-        print("들어오김함")
-        self.manager = handler
         if self._streamer is not None:
             self._streamer.stop()
             self._streamer.join()
-        self._streamer = Streamer(self).with_manager(handler)
+        self._streamer = Streamer(self).with_handler(handler)
         self._streamer.start()
 
         self._client.master.set_mode_px4(
@@ -68,11 +67,13 @@ class Command:
         self._logger.info("기체 Offboard 모드 전환 완료")
 
     #---------------------- 3. 특정 고도로 상승 ----------------------
-    def hold_position_takeoff(self, x, y, z) -> None:
+    def hold_position_takeoff(self, pos) -> None:
+        print("pos")
+        print(pos.z)
         if self._streamer is not None:
             self._streamer.stop()
             self._streamer.join()
-        self._streamer = Streamer(self).with_xyz(x, y, z)
+        self._streamer = Streamer(self).with_xyz(pos.x, pos.y, pos.z)
         self._streamer.start()
 
     # ---------------------- 4. 위치 전송 ----------------------

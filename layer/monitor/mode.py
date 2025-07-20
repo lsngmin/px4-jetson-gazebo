@@ -1,6 +1,6 @@
 from typing_extensions import override
 
-from default import MODE_CHANGED, decode_px4_mode
+from default import MODE_CHANGED, decode_px4_mode, AutoSubMode, MainMode
 from common.pattern import Singleton
 from layer.monitor import Monitor
 
@@ -20,9 +20,11 @@ class ModeMonitor(Monitor, Singleton):
         # mode 추출 (PX4/MAVLink의 base_mode/custom_mode 프로토콜)
         mode = decode_px4_mode(msg.custom_mode)
         if mode == "AUTO:LOITER":
-            self._ed.publish(MODE_CHANGED, True)
+            self._ed.publish(MODE_CHANGED, AutoSubMode.LOITER)
+        elif mode == "OFFBOARD":
+            self._ed.publish(MODE_CHANGED, MainMode.OFFBOARD)
         else:
-            self._ed.publish(MODE_CHANGED, False)
+            self._ed.publish(MODE_CHANGED, None)
 
         if mode != self._current_mode:
             self._logger.info(f"PX4 모드 변경 감지 — {self._current_mode} → {mode}")

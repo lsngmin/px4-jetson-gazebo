@@ -4,7 +4,7 @@
 #
 # from common.core import MavLinkClient
 # from common import Singleton, MEventDispatcher
-# from common.detect import Detector
+# from common.vision import Detector
 #
 # from layer import Command
 # from layer.monitor import PositionMonitor, PositionData, VtolStateMonitor, ModeMonitor, RescuePositionMonitor

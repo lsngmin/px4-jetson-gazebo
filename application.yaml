@@ -1,6 +1,10 @@
 connection_uri: udp:0.0.0.0:14551
 
-rescue_target_lat: 47.398562
-rescue_target_lon: 8.546631
-rescue_target_tolerance: 20.0
+rescue_target_lat: 47.398036
+rescue_target_lon: 8.546201
+rescue_target_tolerance: 120.0
+rescue_target_hold_altitude: -30
+rescue_target_name: rescue
 camera_src: undefineddd
+meet_confidence: 0.3
+model_src: ./yolov8n.pt
