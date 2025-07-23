@@ -34,7 +34,7 @@ class Detector(Singleton, Monitor):
         self._camera_src = self._config.camera_src
 
         self._model = YoloPredictor()
-        self.cap = cv2.VideoCapture(self._camera_src, cv2.CAP_ANY)
+        self.cap = cv2.VideoCapture(0, cv2.CAP_ANY)
         if not self.cap.isOpened():
             raise RuntimeError(f"카메라 연결 실패: {self._camera_src!r}")
         self._logger.info("Camera opened: %s", self._camera_src)
