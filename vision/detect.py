@@ -72,7 +72,7 @@ class Detector(Singleton, Monitor):
                     x, y, w, h = box.xywh[0]
                     u, v = xywh_to_uv(x, y, w, h)
                     self._logger.debug(x, y, w, h)
-                    self._logger.debug(u, v)
+                    self._logger.debug("u: %f, v: %f",u, v)
                     self._ed.publish(VISION_UV, UV(u, v))
                     self._logger.info(f"객체 검출 성공: u -> {u}, v -> {v}, conf -> {conf}, label -> {self._target_name}")
             self._logger.warning("객체가 검출되었으나 해당하는 객체가 아닙니다.")
