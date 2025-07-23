@@ -74,6 +74,9 @@ class Detector(Singleton, Monitor):
                     self._logger.debug("x: %f, y: %f, w:%f, h:%f",x, y, w, h)
                     self._logger.debug("u: %f, v: %f",u, v)
                     self._ed.publish(VISION_UV, UV(u, v))
+                    cv2.rectangle(frame, (x - w // 2, y - h // 2), (x + w // 2, y + h // 2), (0, 255, 0), 2)
+                    cv2.putText(frame, f"{self._target_name} {conf:.2f}", (x, y - 10),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
                     self._logger.info(f"객체 검출 성공: u -> {u}, v -> {v}, conf -> {conf}, label -> {self._target_name}")
             self._logger.warning("객체가 검출되었으나 해당하는 객체가 아닙니다.")
 
