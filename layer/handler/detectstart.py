@@ -17,7 +17,9 @@ class DetectStartHandler(Handler, Singleton):
 
             best_confidence = self._config.meet_confidence
             while True:
-                dectectionresult = self._detector.infer()
+                # dectectionresult = self._detector.infer()
+                import time
+                time.sleep(1)
 
                 #낮다면 다시 한번 루프를 돌려야함
 
