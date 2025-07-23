@@ -32,14 +32,14 @@ class Detector(Singleton, Monitor):
 
         # resolveTODO: 카메라 연결 부분 구현
         self._camera_src = self._config.camera_src
-
-        self._model = YoloPredictor()
+        self._yopd = YoloPredictor()
+        self._model = self._yopd.model
         self.cap = cv2.VideoCapture(0, cv2.CAP_ANY)
         if not self.cap.isOpened():
             raise RuntimeError(f"카메라 연결 실패: {self._camera_src!r}")
         self._logger.info("Camera opened: %s", self._camera_src)
         self._target_name = self._config.rescue_target_name  # 모델할 때 라벨링한 이름이다
-        self._target_cls_id = self._model.names.index(self._target_name)
+        # self._target_cls_id = self._model.names.index(self._target_name)
         self._logger.info("디텍더 초기화 완료")
 
     def infer(self) -> None:
