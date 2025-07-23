@@ -1,4 +1,4 @@
-connection_uri: udp:192.168.0.130:14551@14551
+connection_uri: udp:192.168.0.130:14551
 
 rescue_target_lat: 47.398036
 rescue_target_lon: 8.546201
