@@ -77,6 +77,10 @@ class Detector(Singleton, Monitor):
                     self._logger.info(f"객체 검출 성공: u -> {u}, v -> {v}, conf -> {conf}, label -> {self._target_name}")
             self._logger.warning("객체가 검출되었으나 해당하는 객체가 아닙니다.")
 
+            cv2.imshow("YOLOv8 Detection", frame)
+            if cv2.waitKey(1) & 0xFF == ord('q'):
+                break
+
     @override
     def _handle_message(self, msg):
         pass
