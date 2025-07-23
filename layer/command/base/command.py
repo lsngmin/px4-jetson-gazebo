@@ -25,13 +25,13 @@ class Command(Singleton):
         self._toc.subscribe(HOLD_ALTITUDE, self.hold_position_takeoff)
 
 
-        # while True:
-        #     hb = self._client.master.recv_match(type='HEARTBEAT', blocking=True, timeout=5)
-        #     if hb and hb.get_srcComponent() == mavutil.mavlink.MAV_COMP_ID_AUTOPILOT1:
-        #         # 이 메시지가 FCU에서 온 진짜 heartbeat
-        #         self._client.master.target_system = hb.get_srcSystem()
-        #         self._client.master.target_component = hb.get_srcComponent()
-        #         break
+        while True:
+            hb = self._client.master.recv_match(type='HEARTBEAT', blocking=True, timeout=5)
+            if hb and hb.get_srcComponent() == mavutil.mavlink.MAV_COMP_ID_AUTOPILOT1:
+                # 이 메시지가 FCU에서 온 진짜 heartbeat
+                self._client.master.target_system = hb.get_srcSystem()
+                self._client.master.target_component = hb.get_srcComponent()
+                break
 
     #---------------------- 0. 시동 켜기/끄기 커맨드 ----------------------
     def _send_disarm_arm(self, param1: int) -> None:

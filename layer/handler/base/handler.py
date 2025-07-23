@@ -7,6 +7,7 @@ from default import POSITION_CHANGED, MODE_CHANGED, VTOL_STATE_CHANGED, \
     RESCUE_POSITION_HIT, SET_MODE_OFFBOARD, HOLD_ALTITUDE, MainMode, AutoSubMode, VISION_UV
 from common.util import PositionData
 from common.messages import UV
+
 class Handler:
     def __init__(self) -> None:
         self._ed: MEventDispatcher = MEventDispatcher.instance()

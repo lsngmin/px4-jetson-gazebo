@@ -6,21 +6,23 @@ from layer.handler import WaypointHoldHandler
 from layer.handler.detectstart import DetectStartHandler
 from layer.monitor import ModeMonitor, VtolStateMonitor, PositionMonitor,RescuePositionMonitor
 from layer.command import Command
-# from vision.detect import Detector
+
 if __name__ == "__main__":
     configure_logging(level=logging.DEBUG, log_dir = "./log", filename = "AppLog")
+    #----------------------  Command 계층  ----------------------
     c = Command.get_instance()
-    # d = Detector.get_instance()
+
+    #----------------------  Monitor 계층  ----------------------
     ModeMonitor.get_instance()
     VtolStateMonitor.get_instance()
     PositionMonitor.get_instance()
     RescuePositionMonitor.get_instance()
+
+    #----------------------  Handler 계층  ----------------------
     WaypointHoldHandler.get_instance()
     DetectStartHandler.get_instance()
+    c.arm()
 
-
-
-    # DetectManager.get_instance()
     while True:
         time.sleep(1)
 
