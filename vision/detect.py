@@ -71,7 +71,7 @@ class Detector(Singleton, Monitor):
                 if cls_id == self._target_cls_id and conf >= self._config.meet_confidence:
                     x, y, w, h = box.xywh[0]
                     u, v = xywh_to_uv(x, y, w, h)
-                    self._logger.debug(x, y, w, h)
+                    self._logger.debug("x: %f, y: %f, w:%f, h:%f",x, y, w, h)
                     self._logger.debug("u: %f, v: %f",u, v)
                     self._ed.publish(VISION_UV, UV(u, v))
                     self._logger.info(f"객체 검출 성공: u -> {u}, v -> {v}, conf -> {conf}, label -> {self._target_name}")
