@@ -7,8 +7,8 @@ def configure_logging(level=logging.DEBUG, log_dir = "./log", filename = None):
     #                                    #
     #                                    #
     ######################################
-    format_msg  = "[%(asctime)s] [%(levelname)s] [%(name)s] %(message)s"
-    format_date = "%Y-%m-%d %H:%M:%S.%f"
+    format_msg  = "[%(asctime)s.%(msecs)03d] [%(levelname)s] [%(name)s] %(message)s"
+    format_date = "%Y-%m-%d %H:%M:%S"
 
     # StreamHandler: 콘솔 출력용
     handler = logging.StreamHandler()
