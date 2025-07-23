@@ -4,7 +4,7 @@ rescue_target_lat: 47.398036
 rescue_target_lon: 8.546201
 rescue_target_tolerance: 120.0
 rescue_target_hold_altitude: -2
-rescue_target_name: rescue
+rescue_target_name: tray
 camera_src: undefineddd
 meet_confidence: 0.3
 model_src: ./yolov8n.pt

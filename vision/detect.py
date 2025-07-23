@@ -39,7 +39,13 @@ class Detector(Singleton, Monitor):
             raise RuntimeError(f"카메라 연결 실패: {self._camera_src!r}")
         self._logger.info("Camera opened: %s", self._camera_src)
         self._target_name = self._config.rescue_target_name  # 모델할 때 라벨링한 이름이다
-        self._target_cls_id = self._model.names.index(self._target_name)
+        # self._target_cls_id = self._model.names.index(self._target_name)
+
+        names_dict = self._model.names
+        # label → id 매핑 생성
+        name2id = {v: k for k, v in names_dict.items()}
+        self._target_cls_id = name2id[self._target_name]
+
         self._logger.info("디텍더 초기화 완료")
 
     def infer(self) -> None:
