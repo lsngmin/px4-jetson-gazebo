@@ -21,6 +21,8 @@ if __name__ == "__main__":
     #----------------------  Handler 계층  ----------------------
     WaypointHoldHandler.get_instance()
     DetectStartHandler.get_instance()
+    time.sleep(10)
+
     c.arm()
 
     while True:
