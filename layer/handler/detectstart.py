@@ -7,6 +7,7 @@ from layer.handler.base import Handler
 class DetectStartHandler(Handler, Singleton):
     def __init__(self):
         super().__init__()
+        self._detector = Detector()
 
     def _on_authority_activated(self):
         checked = self._is_vtol_mc and self._current_mode is MainMode.OFFBOARD and self._is_rescue_reached
@@ -17,7 +18,7 @@ class DetectStartHandler(Handler, Singleton):
 
             best_confidence = self._config.meet_confidence
             while True:
-                # dectectionresult = self._detector.infer()
+                dectectionresult = self._detector.infer()
                 import time
                 time.sleep(1)
 

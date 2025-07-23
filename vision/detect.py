@@ -7,6 +7,7 @@ from pydantic import BaseModel, Field
 from typing_extensions import override
 from ultralytics import YOLO
 
+from common.YoloPredictor import YoloPredictor
 from common.pattern import Singleton
 from default import VISION_UV
 from common.geometry import xywh_to_uv
@@ -27,11 +28,12 @@ class DetectionResult(BaseModel):
 
 class Detector(Singleton, Monitor):
     def __init__(self):
-        super().__init__()
+        super().__init__('HEARTBEAT')
 
         # resolveTODO: 카메라 연결 부분 구현
         self._camera_src = self._config.camera_src
-        self._model = YOLO(self._config.model_src)
+
+        self._model = YoloPredictor()
         self.cap = cv2.VideoCapture(self._camera_src, cv2.CAP_ANY)
         if not self.cap.isOpened():
             raise RuntimeError(f"카메라 연결 실패: {self._camera_src!r}")
