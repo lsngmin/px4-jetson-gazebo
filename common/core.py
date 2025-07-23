@@ -20,6 +20,8 @@ class MavLinkClient(Singleton):
     def _listen(self):
         while True:
             msg = self.master.recv_match(blocking=True, timeout=1)
+            if msg and msg.get_type() == 'HEARTBEAT':
+                print(msg)
             if msg:
                 self._event_bus.publish(msg)
             else:
